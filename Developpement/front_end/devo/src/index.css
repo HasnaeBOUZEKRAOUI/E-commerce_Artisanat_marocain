@@ -1,0 +1,22 @@
+@import "tailwindcss";
+
+/* Importation de Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Fustat:wght@400;500;600;700&display=swap');
+
+/* Configuration de la police dans Tailwind V4 */
+@theme {
+  --font-fustat: "Fustat", sans-serif;
+  
+  /* Tu peux aussi ajouter tes couleurs ici si besoin */
+  --color-artisan-gold: #D4AF37;
+}
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@200;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Manuale:wght@400;500;600;700;800&family=Manrope:wght@400;700&display=swap');
+@theme {
+  /* On définit la variable pour Manrope */
+  --manuale: "Manuale", serif;
+  --font-manrope: "Manrope", sans-serif;
+  
+  /* Tu peux garder Fustat si tu veux mixer les deux, 
+     ou la remplacer complètement par Manrope */
+}
