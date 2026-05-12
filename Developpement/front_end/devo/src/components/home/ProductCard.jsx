@@ -1,24 +1,30 @@
-export default function ProductCard({ img, title, description, price }) {
-    return (
-      <div className="group flex flex-col gap-2">
-        {/* Image */}
-        <div className="aspect-square overflow-hidden rounded-md bg-gray-100 relative">
-          <img
-            src={img}
-            alt={title}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-          />
-          {/* Bouton panier au survol */}
-          <button className="absolute bottom-2 left-1/2 -translate-x-1/2 bg-black text-white text-[10px] font-semibold tracking-wider px-3 py-1.5 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
-            + Ajouter
-          </button>
-        </div>
-  
-        {/* Infos */}
-        <div>
-          <p className="text-xs text-gray-500 leading-snug line-clamp-2">{description}</p>
-          <p className="text-xs font-bold text-gray-900 mt-1">{price}</p>
-        </div>
+export default function ProductCard({ img, description, price }) {
+  return (
+    <div className="group flex flex-col gap-3">
+      {/* Conteneur Image avec bordure asymétrique */}
+      <div className="aspect-square overflow-hidden border border-gray-300 rounded-tl-xl rounded-tr-xl rounded-bl-xl rounded-br-[60px] relative bg-white p-2">
+        <img
+          src={img}
+          alt="Produit"
+          className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-700"
+        />
+        {/* Bouton Panier discret */}
+        <button className="absolute bottom-4 right-4 bg-black text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg">
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+          </svg>
+        </button>
       </div>
-    );
-  }
+
+      {/* Informations Produit */}
+      <div className="px-1">
+        <p className="font-manrope text-[13px] text-gray-800 leading-relaxed line-clamp-3 mb-1">
+          {description}
+        </p>
+        <p className="font-manrope text-[14px] font-black text-black">
+          {price}
+        </p>
+      </div>
+    </div>
+  );
+}

@@ -1,8 +1,9 @@
 import ProductCard from "./ProductCard";
+import img7 from "../../assets/images/img7.jpg";
 
 const sampleProducts = [
   {
-    img: "https://images.unsplash.com/photo-1602173574767-37ac01994b2a?w=300&q=80",
+    img: img7,
     description: "Lorem ipsum dolor sit amet consectetur.Lorem amet consectetur.",
     price: "300.50 dh",
   },
@@ -101,17 +102,19 @@ const gastronomieProducts = [
 
 function ProductGrid({ title, products }) {
   return (
-    <div className="mb-14">
-      {/* En-tête section */}
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-lg font-bold tracking-widest uppercase text-gray-900">{title}</h2>
-        <a href="#" className="text-xs text-amber-500 hover:underline font-semibold tracking-wider">
-          Voir plus +
+    <div className="mb-12">
+      {/* En-tête avec Manuale */}
+      <div className="flex items-baseline justify-between mb-10 border border-gray-100 pb-4">
+        <h2 className="font-manuale text-3xl md:text-4xl font-bold uppercase tracking-tight text-black">
+          {title}
+        </h2>
+        <a href="#" className="font-manrope text-[13px] text-gray-900 hover:text-amber-700 font-medium flex items-center gap-1 transition-colors">
+          Voir plus <span className="text-lg">→</span>
         </a>
       </div>
 
-      {/* Grille 6 produits */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
+      {/* Grille de produits */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-x-6 gap-y-10">
         {products.map((product, index) => (
           <ProductCard key={index} {...product} />
         ))}
@@ -122,8 +125,8 @@ function ProductGrid({ title, products }) {
 
 export default function ProductsSection() {
   return (
-    <section className="py-14 bg-white">
-      <div className="max-w-6xl mx-auto px-4">
+    <section className="py-2 bg-white">
+      <div className="max-w-[1440px] mx-auto px-6 md:px-10">
         <ProductGrid title="Nouveautés" products={sampleProducts} />
         <ProductGrid title="Faites Briller Vos Tables" products={sampleProducts} />
         <ProductGrid title="Bijoux" products={bijouxProducts} />
@@ -131,4 +134,4 @@ export default function ProductsSection() {
       </div>
     </section>
   );
-}
+    }

@@ -42,12 +42,6 @@ export default function Home() {
           title="Nouveautés"
           products={products}
         />
-
-        <ProductsSection
-          title="Bijoux"
-          products={products}
-        />
-
         <Newsletter />
 
       </main>

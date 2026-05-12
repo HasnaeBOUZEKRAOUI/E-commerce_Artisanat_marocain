@@ -12,12 +12,10 @@ export default function CategoriesSection() {
     <section className="py-10 bg-white border-b border-gray-100">
       <div className="max-w-7xl mx-auto px-2">
         
-        {/* Titre avec Manrope - Style "Manuale" (gras, espacé, imposant) */}
-        <h2 className="text-center font-serif text-xs md:text-3xl font-medium tracking-tight text-black mb-10">
+        <h2 className="text-center font-serif text-2xl md:text-3xl font-medium tracking-tight text-black mb-10">
           Catégories Populaires
         </h2>
 
-        {/* Grille des catégories */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-y-0 gap-x-0">
           {categories.map((cat) => (
             <a
@@ -36,7 +34,6 @@ export default function CategoriesSection() {
                 </div>
               </div>
 
-              {/* Nom de la catégorie - Manrope bold */}
               <span className="mt-6 font-manrope text-[14px] md:text-[15px] font-bold text-gray-900 text-center uppercase tracking-widest group-hover:text-amber-700 transition-colors">
                 {cat.name}
               </span>

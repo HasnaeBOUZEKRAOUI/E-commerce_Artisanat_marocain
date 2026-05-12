@@ -1,22 +1,29 @@
 export default function Newsletter() {
-    return (
-      <section className="py-16 bg-gray-900">
-        <div className="max-w-2xl mx-auto px-4 text-center">
-          <h2 className="text-3xl md:text-4xl font-black text-white mb-8 tracking-tight">
-            Abonnez-vous
-          </h2>
-  
-          <div className="flex flex-col sm:flex-row items-center gap-3 max-w-lg mx-auto">
-            <input
-              type="email"
-              placeholder="Entrez votre adresse e-mail"
-              className="flex-1 w-full px-5 py-3.5 rounded-sm bg-white text-gray-800 text-sm placeholder-gray-400 outline-none focus:ring-2 focus:ring-amber-400"
-            />
-            <button className="w-full sm:w-auto bg-amber-500 hover:bg-amber-600 text-white font-bold text-sm tracking-widest px-6 py-3.5 rounded-sm transition-colors duration-300 uppercase">
-              S'Abonner
-            </button>
-          </div>
+  return (
+    <section className="py-10 bg-[#EEEEEE]"> {/* Fond gris clair */}
+      <div className="max-w-5xl mx-auto px-6 text-center">
+        
+        {/* Titre avec la police Manuale */}
+        <h2 className="text-center font-serif text-2xl md:text-3xl font-medium tracking-tight text-black mb-10">
+          Abonnez-vous
+        </h2>
+
+        {/* Conteneur de l'input style "Pilule" */}
+        <div className="relative max-w-xl mx-auto flex items-center bg-black rounded-full overflow-hidden p-1 shadow-sm">
+          
+          <input
+            type="email"
+            placeholder="Entrez votre adresse e-mail"
+            className="flex-1 bg-black text-white text-sm px-8 py-4 outline-none placeholder-gray-400 font-manrope"
+          />
+          
+          {/* Bouton blanc contrasté */}
+          <button className="bg-white text-black font-manrope font-bold text-sm px-8 py-4 rounded-full hover:bg-gray-100 transition-colors duration-300">
+            S'Abonner
+          </button>
         </div>
-      </section>
-    );
-  }
+
+      </div>
+    </section>
+  );
+}
