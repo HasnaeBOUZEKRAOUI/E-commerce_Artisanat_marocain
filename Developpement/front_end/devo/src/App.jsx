@@ -4,7 +4,7 @@ import Footer   from "./components/layout/Footer";
 import Home     from "./pages/Home";
 import CategoryPage from "./pages/CategoryPage";
 import LoginPage from "./pages/LoginPage";
-
+import CartPage from "./pages/CartPage";
 export default function App() {
   return (
     <BrowserRouter>
@@ -15,6 +15,7 @@ export default function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<LoginPage />} />
         {/* Page catégorie  →  ex: /categories/salon-chambre */}
+        <Route path="/panier" element={<CartPage />} />        
         <Route path="/categories/:categorySlug" element={<CategoryPage />} />
 
         {/* Page sous-catégorie  →  ex: /categories/salon-chambre/tapis */}

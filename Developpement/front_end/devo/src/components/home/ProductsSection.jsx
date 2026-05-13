@@ -99,7 +99,17 @@ const gastronomieProducts = [
     price: "300.50 dh",
   },
 ];
+import { useCartContext } from "../../context/CartContext";
 
+const { addItem } = useCartContext();
+
+// Au clic sur le bouton :
+addItem({
+  id: product.id,
+  name: product.name,
+  image_url: product.image_url,
+  price: product.price,
+});
 function ProductGrid({ title, products }) {
   return (
     <div className="mb-12">
