@@ -3,7 +3,7 @@ export default function SubCategoryBar({ subcategories = [], activeSlug, onSelec
     const loopedSubcategories = [...subcategories, ...subcategories];
   
     return (
-      <div className="w-full overflow-hidden bg-white py-6 border-b border-gray-50">
+      <div className="w-full overflow-hidden bg-white py-1 border-b border-gray-50">
         {/* Conteneur principal qui cache le débordement */}
         <div className="relative flex overflow-hidden group">
           

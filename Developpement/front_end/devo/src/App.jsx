@@ -3,6 +3,7 @@ import NavBar   from "./components/layout/NavBar";
 import Footer   from "./components/layout/Footer";
 import Home     from "./pages/Home";
 import CategoryPage from "./pages/CategoryPage";
+import LoginPage from "./pages/LoginPage";
 
 export default function App() {
   return (
@@ -12,7 +13,7 @@ export default function App() {
       <Routes>
         {/* Page d'accueil */}
         <Route path="/" element={<Home />} />
-
+        <Route path="/login" element={<LoginPage />} />
         {/* Page catégorie  →  ex: /categories/salon-chambre */}
         <Route path="/categories/:categorySlug" element={<CategoryPage />} />
 
