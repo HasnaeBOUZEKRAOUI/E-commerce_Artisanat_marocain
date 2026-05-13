@@ -109,8 +109,8 @@ export default function CategoryPage() {
         />
 
         {/* ── Titre catégorie ── */}
-        <h1 className="text-2xl md:text-3xl font-black tracking-tight text-gray-900 mb-8 uppercase">
-          {categoryTitle}
+        <h1 className="text-left font-serif text-2xl md:text-4xl font-medium tracking-tight text-black mb-10">      
+        {categoryTitle}
         </h1>
 
         {/* ── Sous-catégories (cercles) ── */}
