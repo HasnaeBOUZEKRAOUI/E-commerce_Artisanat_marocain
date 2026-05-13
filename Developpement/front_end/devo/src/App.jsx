@@ -1,21 +1,26 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import Index from './components/acceuil/Index';
-import './App.css'
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import NavBar   from "./components/layout/NavBar";
+import Footer   from "./components/layout/Footer";
+import Home     from "./pages/Home";
+import CategoryPage from "./pages/CategoryPage";
 
-function App() {
-
+export default function App() {
   return (
-    <>
-      <Index/>
-    
-    
-    
-    
-    </>
-  )
-}
+    <BrowserRouter>
+      <NavBar />
 
-export default App
+      <Routes>
+        {/* Page d'accueil */}
+        <Route path="/" element={<Home />} />
+
+        {/* Page catégorie  →  ex: /categories/salon-chambre */}
+        <Route path="/categories/:categorySlug" element={<CategoryPage />} />
+
+        {/* Page sous-catégorie  →  ex: /categories/salon-chambre/tapis */}
+        <Route path="/categories/:categorySlug/:subcategorySlug" element={<CategoryPage />} />
+      </Routes>
+
+      <Footer />
+    </BrowserRouter>
+  );
+}

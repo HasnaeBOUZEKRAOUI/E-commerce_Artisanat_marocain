@@ -135,16 +135,28 @@ export default function Footer() {
       </div>
 
       {/* Barre de Copyright blanche */}
-      <div className="bg-white py-1 text-black">
-        <div className="max-w-[1440px] mx-auto px-10 flex flex-col md:row items-center justify-between text-[12px] font-medium">
-          <p>© All Copyright 2026 by HB</p>
-          <div className="flex gap-4">
-            <a href="#" className="hover:underline">Terms of Use</a>
-            <span className="text-gray-300">|</span>
-            <a href="#" className="hover:underline">Privacy Policy</a>
-          </div>
-        </div>
-      </div>
+      <div className="bg-white py-1 text-black border-t border-gray-100">
+  <div className="max-w-[1440px] mx-auto px-10 flex flex-col md:flex-row items-center justify-between text-[12px] font-medium tracking-tight">
+    
+    {/* Copyright à gauche */}
+    <p>© All Copyright 2026 by HB</p>
+    
+    {/* Liens à droite avec séparateur */}
+    <div className="flex items-center gap-6 mt-4 md:mt-0">
+      <a href="#" className="hover:text-gray-600 transition-colors">
+        Terms of Use
+      </a>
+      
+      {/* Séparateur vertical fin comme sur l'image */}
+      <span className="text-gray-400 font-light">|</span>
+      
+      <a href="#" className="hover:text-gray-600 transition-colors">
+        Privacy Policy
+      </a>
+    </div>
+
+  </div>
+</div>
     </footer>
   );
 }

@@ -20,3 +20,17 @@
   /* Tu peux garder Fustat si tu veux mixer les deux, 
      ou la remplacer complètement par Manrope */
 }
+@keyframes scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-infinite-scroll {
+  display: flex;
+  width: max-content;
+  animation: scroll 40s linear infinite;
+}
+
+.animate-infinite-scroll:hover {
+  animation-play-state: paused;
+}
