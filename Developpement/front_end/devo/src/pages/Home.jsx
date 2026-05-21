@@ -1,3 +1,4 @@
+import { useState } from "react";
 import Navbar from "../components/layout/Navbar";
 import Footer from "../components/layout/Footer";
 
@@ -8,8 +9,10 @@ import ArtisansSection from "../components/home/ArtisansSection";
 import ProductsSection from "../components/home/ProductsSection";
 import Newsletter from "../components/home/Newsletter";
 import WhyUs from "../components/home/WhyUs";
+import Panier from "./Panier";
 
 export default function Home() {
+  const [showPanier, setPanier] = useState(false);
 
   const products = [
     {
@@ -26,27 +29,36 @@ export default function Home() {
 
   return (
     <>
-      <Navbar />
+      {showPanier ? (
+        <>
+          <Navbar onCartClick={() => setPanier(false)} />
+          <Panier />
+        </>
+      ) : (
+        <>
+          <Navbar onCartClick={() => setPanier(true)} />
 
-      <main className="max-w-7xl mx-auto px-6">
+          <main className="max-w-7xl mx-auto px-6">
 
-        <HeroSection />
+            <HeroSection />
 
-        <CategoriesSection />
+            <CategoriesSection />
 
-        <StyleSection />
+            <StyleSection />
 
-        <ArtisansSection />
+            <ArtisansSection />
 
-        <ProductsSection
-          title="Nouveautés"
-          products={products}
-        />
-        <Newsletter />
+            <ProductsSection
+              title="Nouveautés"
+              products={products}
+            />
+            <Newsletter />
 
-      </main>
-      <WhyUs/>
-      <Footer />
+          </main>
+          <WhyUs/>
+          <Footer />
+        </>
+      )}
     </>
   );
 }

@@ -137,7 +137,7 @@ export default function Footer() {
       {/* Barre de Copyright blanche */}
       <div className="bg-white py-1 text-black">
         <div className="max-w-[1440px] mx-auto px-10 flex flex-col md:row items-center justify-between text-[12px] font-medium">
-          <p>© All Copyright 2026 by HB</p>
+          <p>© All Copyright 2026 by Hasnae&Fatima</p>
           <div className="flex gap-4">
             <a href="#" className="hover:underline">Terms of Use</a>
             <span className="text-gray-300">|</span>
