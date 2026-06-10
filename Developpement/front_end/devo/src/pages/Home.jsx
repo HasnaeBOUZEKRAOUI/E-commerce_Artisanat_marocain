@@ -13,7 +13,6 @@ export default function Home() {
       <CategoriesSection />
       <StyleSection />
       <ArtisansSection />
-      <ProductsSection />
       <Newsletter />
       <WhyUs />
     </main>

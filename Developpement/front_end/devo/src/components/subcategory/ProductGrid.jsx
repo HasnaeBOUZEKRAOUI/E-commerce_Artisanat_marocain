@@ -1,17 +1,12 @@
 import { Link } from "react-router-dom";
+import { useCartContext } from "../../context/CartContext";
 
-/* ────────────────────────────────────────
-   ProductGrid
-   @param products  - Product[] depuis Laravel
-   @param loading   - bool
-   @param total     - nombre total (meta.total)
-──────────────────────────────────────── */
+/* ──────────────────────────────────────── */
 export default function ProductGrid({ products = [], loading = false, total = 0 }) {
   if (loading) return <ProductGridSkeleton />;
 
   return (
     <div>
-      {/* Compteur */}
       <p className="text-xs text-gray-400 mb-5">{total} produits</p>
 
       {products.length === 0 ? (
@@ -27,67 +22,55 @@ export default function ProductGrid({ products = [], loading = false, total = 0 
   );
 }
 
-/* ── Carte produit ── */
+/* ── CARD ── */
 function ProductCard({ product }) {
+  const { addItem } = useCartContext(); // ✅ ICI
+
+  const handleAdd = (e) => {
+    e.preventDefault(); // empêche navigation Link
+
+    addItem({
+      id: product.id,
+      name: product.name,
+      image_url: product.image_url,
+      price: product.price,
+    });
+  };
+
   return (
     <Link
       to={`/produits/${product.id}`}
       className="group flex flex-col gap-2"
     >
-      {/* Image */}
       <div className="aspect-square overflow-hidden rounded-lg bg-gray-100 relative">
         <img
-          src={product.image_url || "https://placehold.co/300x300/f5f5f5/aaa?text=Produit"}
+          src={product.image_url || "https://placehold.co/300x300"}
           alt={product.name}
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-          onError={(e) => {
-            e.target.src = "https://placehold.co/300x300/f5f5f5/aaa?text=Produit";
-          }}
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform"
         />
 
-        {/* Badge stock */}
-        {product.stock === 0 && (
-          <span className="absolute top-2 left-2 bg-gray-800 text-white text-[9px] font-bold px-2 py-0.5 rounded-sm uppercase tracking-wider">
-            Épuisé
-          </span>
-        )}
-        {product.is_new && (
-          <span className="absolute top-2 left-2 bg-amber-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-sm uppercase tracking-wider">
-            Nouveau
-          </span>
-        )}
-
-        {/* Bouton survol */}
-        <div className="absolute inset-x-0 bottom-0 translate-y-full group-hover:translate-y-0 transition-transform duration-300 p-2">
+        {/* bouton panier */}
+        <div className="absolute inset-x-0 bottom-0 translate-y-full group-hover:translate-y-0 transition-transform p-2">
           <button
-            onClick={(e) => { e.preventDefault(); /* logique panier */ }}
-            className="w-full bg-black text-white text-[10px] font-bold tracking-widest py-2 rounded hover:bg-amber-500 transition-colors"
+            onClick={handleAdd}
+            className="w-full bg-black text-white text-[10px] font-bold py-2 rounded hover:bg-amber-500"
           >
             + Ajouter au panier
           </button>
         </div>
       </div>
 
-      {/* Infos */}
       <div className="px-0.5">
-        <p className="text-xs text-gray-600 leading-snug line-clamp-2 mb-1">
+        <p className="text-xs text-gray-600 line-clamp-2 mb-1">
           {product.description || product.name}
         </p>
-        <div className="flex items-center gap-2">
-          <span className="text-xs font-bold text-gray-900">
-            {product.price} dh
-          </span>
-          {product.original_price && product.original_price > product.price && (
-            <span className="text-[10px] text-gray-400 line-through">
-              {product.original_price} dh
-            </span>
-          )}
-        </div>
+        <span className="text-xs font-bold text-gray-900">
+          {product.price} dh
+        </span>
       </div>
     </Link>
   );
 }
-
 /* ── Skeleton loading (16 cartes) ── */
 function ProductGridSkeleton() {
   return (
