@@ -1,66 +1,51 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+// src/pages/LoginPage.jsx
+import { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 
 export default function LoginPage() {
-  const navigate = useNavigate();
+  const navigate = useNavigate()
+  const { login } = useAuth()
 
-  const [formData, setFormData] = useState({ email: "", password: "" });
-  const [loading, setLoading]   = useState(false);
-  const [error, setError]       = useState("");
+  const [formData, setFormData] = useState({ email: '', password: '' })
+  const [loading, setLoading]   = useState(false)
+  const [error, setError]       = useState('')
 
   const handleChange = (e) => {
-    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-    setError("");
-  };
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }))
+    setError('')
+  }
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
+    e.preventDefault()
+    setLoading(true)
+    setError('')
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: JSON.stringify(formData),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        setError(data.message || "Email ou mot de passe incorrect.");
-        return;
-      }
-
-      // Stocker le token Laravel Sanctum / JWT
-      localStorage.setItem("auth_token", data.token);
-      localStorage.setItem("user", JSON.stringify(data.user));
-
-      // Redirection après connexion
-      navigate("/");
-    } catch {
-      setError("Erreur de connexion. Vérifiez votre réseau.");
+      await login(formData.email, formData.password)
+      navigate('/')
+    } catch (err) {
+      setError(
+        err.response?.data?.message ?? 'Email ou mot de passe incorrect.'
+      )
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   return (
     <main className="min-h-[70vh] flex items-start justify-center bg-white pt-10 pb-20 px-4">
       <div className="w-full max-w-md">
 
-        {/* Titre */}
-        <h1 className="text-center font-serif text-2xl md:text-3xl font-medium tracking-tight text-black mb-10">     
-        Login
+        <h1 className="text-center font-serif text-2xl md:text-3xl font-medium tracking-tight text-black mb-10">
+          Login
         </h1>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-6">
 
           {/* Email */}
           <div className="flex flex-col gap-1.5">
-            <label htmlFor="email" className="text-sm text-black">
-              email
-            </label>
+            <label htmlFor="email" className="text-sm text-black">email</label>
             <input
               id="email"
               name="email"
@@ -76,13 +61,8 @@ export default function LoginPage() {
           {/* Password */}
           <div className="flex flex-col gap-1.5">
             <div className="flex items-center justify-between">
-              <label htmlFor="password" className="text-sm text-black">
-                Password
-              </label>
-              <Link
-                to="/forgot-password"
-                className="text-sm text-gray-500 hover:text-amber-500 transition-colors"
-              >
+              <label htmlFor="password" className="text-sm text-black">Password</label>
+              <Link to="/forgot-password" className="text-sm text-gray-500 hover:text-amber-500 transition-colors">
                 Forgot Password?
               </Link>
             </div>
@@ -101,7 +81,6 @@ export default function LoginPage() {
             </p>
           )}
 
-          {/* Bouton Sign in */}
           <button
             type="submit"
             disabled={loading}
@@ -115,48 +94,32 @@ export default function LoginPage() {
                 </svg>
                 Connexion…
               </span>
-            ) : (
-              "Sign in"
-            )}
+            ) : 'Sign in'}
           </button>
 
-          {/* Créer un compte */}
           <p className="text-sm text-gray-500 text-left">
-            <Link
-              to="/register"
-              className="hover:text-amber-800 transition-colors underline-offset-2 hover:underline"
-            >
+            <Link to="/register" className="hover:text-amber-800 transition-colors underline-offset-2 hover:underline">
               create account?
             </Link>
           </p>
         </form>
       </div>
     </main>
-  );
+  )
 }
 
-/* ── Champ password avec toggle visibilité ── */
 function PasswordInput({ id, name, value, onChange }) {
-  const [show, setShow] = useState(false);
-
+  const [show, setShow] = useState(false)
   return (
     <div className="relative">
       <input
-        id={id}
-        name={name}
-        type={show ? "text" : "password"}
-        required
-        autoComplete="current-password"
-        value={value}
-        onChange={onChange}
+        id={id} name={name} type={show ? 'text' : 'password'}
+        required autoComplete="current-password" value={value} onChange={onChange}
         className="w-full border border-gray-300 rounded-none px-4 py-3 pr-10 text-sm text-gray-800 focus:outline-none focus:border-gray-800 transition-colors"
       />
-      <button
-        type="button"
-        onClick={() => setShow((s) => !s)}
+      <button type="button" onClick={() => setShow((s) => !s)}
         className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700 transition-colors"
-        aria-label={show ? "Masquer le mot de passe" : "Afficher le mot de passe"}
-      >
+        aria-label={show ? 'Masquer' : 'Afficher'}>
         {show ? (
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
@@ -171,5 +134,5 @@ function PasswordInput({ id, name, value, onChange }) {
         )}
       </button>
     </div>
-  );
+  )
 }
