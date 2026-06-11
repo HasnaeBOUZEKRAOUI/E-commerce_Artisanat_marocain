@@ -1,32 +1,35 @@
+// src/api/axios.js
 import axios from 'axios'
 
 const api = axios.create({
-  // Utilisez l'URL complète de votre serveur Laravel
-  baseURL: 'http://localhost:8000/api', 
-  headers: { 
-    'Content-Type': 'application/json', 
-    'Accept': 'application/json' 
+  baseURL: import.meta.env.VITE_API_URL ?? 'http://localhost:8000/api',
+  headers: {
+    'Content-Type': 'application/json',
+    Accept: 'application/json',
   },
 })
 
-// Intercepteur pour ajouter le token à chaque requête automatiquement
-api.interceptors.request.use(config => {
-  const token = localStorage.getItem('token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
+// Injecte le token avant chaque requête
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('auth_token') // clé unifiée
+    if (token) config.headers.Authorization = `Bearer ${token}`
+    return config
+  },
+  (error) => Promise.reject(error)
+)
 
+// Gestion globale des erreurs
 api.interceptors.response.use(
-  res => res,
-  err => {
-    if (err.response?.status === 401) {
-      localStorage.removeItem('token')
-      
+  (res) => res,
+  (error) => {
+    const status = error.response?.status
+    if (status === 401) {
+      localStorage.removeItem('auth_token')
+      localStorage.removeItem('user')
       window.location.href = '/login'
     }
-    return Promise.reject(err)
+    return Promise.reject(error)
   }
 )
 
