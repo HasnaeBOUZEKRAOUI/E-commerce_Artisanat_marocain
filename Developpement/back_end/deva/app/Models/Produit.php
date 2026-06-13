@@ -1,4 +1,5 @@
 <?php
+// app/Models/Produit.php — version corrigée
 
 namespace App\Models;
 
@@ -12,6 +13,7 @@ class Produit extends Model
         'artisan_id',
         'categorie_id',
         'nom',
+        'slug',
         'description',
         'prix',
         'stock',
@@ -27,16 +29,17 @@ class Produit extends Model
         ];
     }
 
-    // ─── Relations ────────────────────────────────────────
+    // ─── Relations ────────────────────────────────────────────
 
     public function artisan(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Artisan::class);
     }
 
+    // ← CLEF : foreign key explicite 'categorie_id' → table 'categories'
     public function categorie(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
-        return $this->belongsTo(Categorie::class);
+        return $this->belongsTo(Categorie::class, 'categorie_id');
     }
 
     public function images(): \Illuminate\Database\Eloquent\Relations\HasMany
@@ -59,34 +62,22 @@ class Produit extends Model
         return $this->hasMany(Avis::class);
     }
 
-    public function lignesPanier(): \Illuminate\Database\Eloquent\Relations\HasMany
-    {
-        return $this->hasMany(LignePanier::class);
-    }
-
-    public function lignesCommande(): \Illuminate\Database\Eloquent\Relations\HasMany
-    {
-        return $this->hasMany(LigneCommande::class);
-    }
-
-    // ─── Helpers ──────────────────────────────────────────
+    // ─── Helpers ──────────────────────────────────────────────
 
     public function getPrincipaleImage(): ?Image
     {
-        return $this->images()->where('principale', true)->first()
-            ?? $this->images()->first();
+        return $this->images->firstWhere('principale', true)
+            ?? $this->images->first();
     }
 
     public function calculerPrixActuel(): float
     {
-        $promotion = $this->promotions()
+        $promotion = $this->promotions
             ->where('est_active', true)
-            ->where('date_debut', '<=', now()->toDateString())
-            ->where('date_fin', '>=', now()->toDateString())
             ->first();
 
-        if ($promotion) {
-            return $promotion->calculerPrixReduit($this->prix);
+        if ($promotion && method_exists($promotion, 'estValide') && $promotion->estValide()) {
+            return $promotion->calculerPrixReduit((float) $this->prix);
         }
 
         return (float) $this->prix;
