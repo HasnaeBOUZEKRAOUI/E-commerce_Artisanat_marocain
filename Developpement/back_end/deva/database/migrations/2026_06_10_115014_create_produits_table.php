@@ -18,8 +18,7 @@ return new class extends Migration
             $table->integer('stock')->default(0);
             $table->string('statut')->default('actif'); // actif | inactif | en_attente
             $table->date('date_ajout')->useCurrent();
-            $table->string('slug')->unique();  // categories, produits
-
+            $table->string('slug')->nullable()->unique();  
             $table->timestamps();
         });
     }

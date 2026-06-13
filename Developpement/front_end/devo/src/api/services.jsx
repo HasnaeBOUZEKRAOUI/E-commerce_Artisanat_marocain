@@ -16,8 +16,9 @@ export const produitsApi = {
   get:    (id)     => api.get(`/produits/${id}`),
 }
 
-// ── Catégories ───────────────────────────────────────────────
+
 export const categoriesApi = {
+  menu:          ()     => api.get('/categories/menu'),   // ← NOUVEAU
   list:          ()     => api.get('/categories'),
   subcategories: (slug) => api.get(`/categories/${slug}/subcategories`),
 }
