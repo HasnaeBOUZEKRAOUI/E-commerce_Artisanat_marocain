@@ -22,24 +22,65 @@ class Import extends Command
 
     const BASE = 'https://mytindy.com';
 
+    /**
+     * Mapping collection MyTindy → catégorie NIVEAU 3 du CategoriesSeeder
+     *
+     *  nom         : nom affiché de la catégorie niveau 3
+     *  slug        : slug de la catégorie niveau 3 (doit matcher le seeder si possible)
+     *  parent_slug : slug de la catégorie NIVEAU 2 (parent) — doit exister dans le seeder
+     */
     const COLLECTION_MAP = [
-        'moroccan-rugs'              => ['nom' => 'Tapis',             'slug' => 'tapis'],
-        'candles'                    => ['nom' => 'Bougies',           'slug' => 'bougies'],
-        'pillowcases'                => ['nom' => 'Coussins',          'slug' => 'coussins'],
-        'pottery-pots'               => ['nom' => 'Poterie',           'slug' => 'poterie'],
-        'lamps-lampshades'           => ['nom' => 'Lampes',            'slug' => 'lampes'],
-        'womens-jewelry'             => ['nom' => 'Bijoux Femme',      'slug' => 'bijoux-femme'],
-        'mens-jewelry'               => ['nom' => 'Bijoux Homme',      'slug' => 'bijoux-homme'],
-        'womens-bags'                => ['nom' => 'Sacs Femme',        'slug' => 'sacs-femme'],
-        'moroccan-leather-pouf'      => ['nom' => 'Poufs',             'slug' => 'poufs'],
-        'moroccan-handmade-blankets' => ['nom' => 'Couvertures',       'slug' => 'couvertures'],
-        'body-care'                  => ['nom' => 'Soins Corps',       'slug' => 'soins-corps'],
-        'hair-care'                  => ['nom' => 'Soins Cheveux',     'slug' => 'soins-cheveux'],
-        'home-fragrance'             => ['nom' => 'Parfum Maison',     'slug' => 'parfum-maison'],
-        'mirrors'                    => ['nom' => 'Miroirs',           'slug' => 'miroirs'],
-        'tagines'                    => ['nom' => 'Tajines',           'slug' => 'tajines'],
-        'honey'                      => ['nom' => 'Miel',              'slug' => 'miel'],
-        'culinary-oils'              => ['nom' => 'Huiles Culinaires', 'slug' => 'huiles-culinaires'],
+        'moroccan-rugs' => [
+            'nom' => 'Moroccan Rugs', 'slug' => 'moroccan-rugs', 'parent_slug' => 'accent-furnitures',
+        ],
+        'candles' => [
+            'nom' => 'Candles', 'slug' => 'candles', 'parent_slug' => 'home-fragrance',
+        ],
+        'pillowcases' => [
+            'nom' => 'Cushions & Pillowcases', 'slug' => 'cushions-pillowcases', 'parent_slug' => 'living-room-bedroom',
+        ],
+        'pottery-pots' => [
+            'nom' => 'Baskets, Pots & Plates', 'slug' => 'baskets-pots-plates', 'parent_slug' => 'living-room-bedroom',
+        ],
+        'lamps-lampshades' => [
+            'nom' => 'Lamps & Lampshades', 'slug' => 'lamps-lampshades', 'parent_slug' => 'living-room-bedroom',
+        ],
+        'womens-jewelry' => [
+            'nom' => 'Women Jewelry', 'slug' => 'womens-jewelry-all', 'parent_slug' => 'jewelry-women',
+        ],
+        'mens-jewelry' => [
+            'nom' => 'Men Jewelry', 'slug' => 'mens-jewelry-all', 'parent_slug' => 'jewelry-men',
+        ],
+        'womens-bags' => [
+            'nom' => 'Bags', 'slug' => 'bags-women', 'parent_slug' => 'fashion-women',
+        ],
+        'moroccan-leather-pouf' => [
+            'nom' => 'Moroccan Poufs & Ottomans', 'slug' => 'moroccan-poufs-ottomans', 'parent_slug' => 'accent-furnitures',
+        ],
+        'moroccan-handmade-blankets' => [
+            'nom' => 'Blankets', 'slug' => 'blankets', 'parent_slug' => 'living-room-bedroom',
+        ],
+        'body-care' => [
+            'nom' => 'Body Care', 'slug' => 'body-care-all', 'parent_slug' => 'body-care',
+        ],
+        'hair-care' => [
+            'nom' => 'Hair Care', 'slug' => 'hair-care-all', 'parent_slug' => 'hair-care',
+        ],
+        'home-fragrance' => [
+            'nom' => 'Home Fragrance', 'slug' => 'home-fragrance-all', 'parent_slug' => 'home-fragrance',
+        ],
+        'mirrors' => [
+            'nom' => 'Mirrors', 'slug' => 'mirrors', 'parent_slug' => 'wall-decor',
+        ],
+        'tagines' => [
+            'nom' => 'Tagines', 'slug' => 'tagines', 'parent_slug' => 'dining',
+        ],
+        'honey' => [
+            'nom' => 'Honey', 'slug' => 'honey', 'parent_slug' => 'moroccan-pantry-sub',
+        ],
+        'culinary-oils' => [
+            'nom' => 'Culinary Oils', 'slug' => 'culinary-oils', 'parent_slug' => 'moroccan-pantry-sub',
+        ],
     ];
 
     public function handle(): void
@@ -51,7 +92,13 @@ class Import extends Command
         $this->info("🇲🇦 Import MyTindy — collection: {$collection} | pages: {$maxPages}" . ($dryRun ? ' [DRY RUN]' : ''));
         $this->newLine();
 
-        $artisan = $dryRun ? null : $this->getOrCreateArtisan();
+        $artisan   = $dryRun ? null : $this->getOrCreateArtisan();
+        $categorie = $dryRun ? null : $this->getOrCreateCategorie($collection);
+
+        if (!$dryRun && !$categorie) {
+            $this->error("❌ Collection '{$collection}' inconnue dans COLLECTION_MAP. Ajoutez-la avant d'importer.");
+            return;
+        }
 
         $imported = 0;
         $skipped  = 0;
@@ -84,7 +131,7 @@ class Import extends Command
                 $this->line("  → " . count($products) . " produits reçus.");
 
                 foreach ($products as $p) {
-                    if ($this->processProduct($p, $artisan, $collection, $dryRun)) {
+                    if ($this->processProduct($p, $artisan, $categorie, $dryRun)) {
                         $imported++;
                     } else {
                         $skipped++;
@@ -101,9 +148,12 @@ class Import extends Command
 
         $this->newLine();
         $this->info("✅ Import terminé — {$imported} produits importés, {$skipped} ignorés.");
+        if ($categorie) {
+            $this->info("   → Catégorie utilisée : {$categorie->nom} (id={$categorie->id}, slug={$categorie->slug}, niveau={$categorie->niveau})");
+        }
     }
 
-    private function processProduct(array $p, ?Artisan $artisan, string $collection, bool $dryRun): bool
+    private function processProduct(array $p, ?Artisan $artisan, ?Categorie $categorie, bool $dryRun): bool
     {
         $titre = $p['title'] ?? null;
         $id    = $p['id']    ?? null;
@@ -125,21 +175,10 @@ class Import extends Command
             return true;
         }
 
-        // ── Catégorie ──────────────────────────────────────────────────────
-        $catInfo   = self::COLLECTION_MAP[$collection] ?? ['nom' => 'Divers', 'slug' => 'divers'];
-        $catSlug   = $catInfo['slug'];
-
-        $categorie = Categorie::firstOrCreate(
-            ['nom' => $catInfo['nom']],          // ← cherche par nom
-            ['description' => '']
-        );
-
         // ── Slug produit unique ────────────────────────────────────────────
         $baseSlug    = Str::slug($titre);
         $produitSlug = $baseSlug;
         $counter     = 1;
-
-        // Garantit l'unicité du slug
         while (Produit::where('slug', $produitSlug)->exists()) {
             $produitSlug = $baseSlug . '-' . $counter++;
         }
@@ -174,6 +213,31 @@ class Import extends Command
 
         $this->line("    ✓ {$titre} | {$prixMad} MAD");
         return true;
+    }
+
+    /**
+     * Récupère ou crée la catégorie NIVEAU 3 correspondant à la collection,
+     * rattachée au bon parent NIVEAU 2 défini dans COLLECTION_MAP.
+     */
+    private function getOrCreateCategorie(string $collection): ?Categorie
+    {
+        $info = self::COLLECTION_MAP[$collection] ?? null;
+        if (!$info) return null;
+
+        // Cherche d'abord par slug + niveau 3 (cas du seeder : "tagines", "honey"...)
+        $categorie = Categorie::where('slug', $info['slug'])->where('niveau', 3)->first();
+        if ($categorie) return $categorie;
+
+        // Sinon, crée-la sous le bon parent niveau 2
+        $parent = Categorie::where('slug', $info['parent_slug'])->where('niveau', 2)->first();
+
+        return Categorie::create([
+            'parent_id'   => $parent?->id,
+            'niveau'      => 3,
+            'nom'         => $info['nom'],
+            'slug'        => $info['slug'],
+            'description' => '',
+        ]);
     }
 
     private function getOrCreateArtisan(): Artisan

@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Categorie;
+use App\Models\Produit;
+use Illuminate\Http\Request;
 
 class CategorieController extends Controller
 {
@@ -51,6 +53,44 @@ class CategorieController extends Controller
         $categories = Categorie::where('niveau', 1)
             ->select('id', 'nom', 'slug', 'image_url')
             ->get();
+
+        return response()->json(['data' => $categories]);
+    }
+
+    /**
+     * GET /api/categories/populaires
+     * Retourne les catégories niveau 3 (celles qui contiennent les produits)
+     * triées par nombre de produits actifs, avec une image représentative.
+     *
+     * Params optionnels :
+     *   - limit : nombre de catégories à retourner (défaut 6)
+     */
+    public function populaires(Request $request)
+    {
+        $limit = min((int) $request->get('limit', 6), 20);
+
+        $categories = Categorie::where('niveau', 3)
+            ->withCount(['produits' => fn($q) => $q->where('statut', 'actif')])
+            ->having('produits_count', '>', 0)
+            ->orderByDesc('produits_count')
+            ->limit($limit)
+            ->get()
+            ->map(function ($cat) {
+                // Récupère l'image du premier produit actif de la catégorie
+                $produit = Produit::where('categorie_id', $cat->id)
+                    ->where('statut', 'actif')
+                    ->with('images')
+                    ->first();
+
+                return [
+                    'id'          => $cat->id,
+                    'nom'         => $cat->nom,
+                    'slug'        => $cat->slug,
+                    'image_url'   => $cat->image_url
+                        ?? $produit?->getPrincipaleImage()?->url_image,
+                    'nb_produits' => $cat->produits_count,
+                ];
+            });
 
         return response()->json(['data' => $categories]);
     }
