@@ -212,6 +212,30 @@ php artisan my:import --collection=honey --pages=1
 php artisan my:import --collection=culinary-oils --pages=1
 ```
 
+Avec une seule commande ::
+@(
+  @{c="moroccan-rugs"; p=3},
+  @{c="candles"; p=2},
+  @{c="pillowcases"; p=2},
+  @{c="pottery-pots"; p=2},
+  @{c="lamps-lampshades"; p=2},
+  @{c="womens-jewelry"; p=3},
+  @{c="mens-jewelry"; p=2},
+  @{c="womens-bags"; p=2},
+  @{c="moroccan-leather-pouf"; p=1},
+  @{c="moroccan-handmade-blankets"; p=2},
+  @{c="body-care"; p=2},
+  @{c="hair-care"; p=1},
+  @{c="home-fragrance"; p=1},
+  @{c="mirrors"; p=1},
+  @{c="tagines"; p=1},
+  @{c="honey"; p=1},
+  @{c="culinary-oils"; p=1}
+) | ForEach-Object {
+  Write-Host "`n═══ Import: $($_.c) ═══" -ForegroundColor Cyan
+  php artisan my:import --collection=$($_.c) --pages=$($_.p)
+}
+
 Les collections disponibles : `moroccan-rugs`, `candles`, `pillowcases`, `pottery-pots`, `lamps-lampshades`, `womens-jewelry`, `mens-jewelry`, `womens-bags`, `moroccan-leather-pouf`, `moroccan-handmade-blankets`, `body-care`, `hair-care`, `home-fragrance`, `mirrors`, `tagines`, `honey`, `culinary-oils`
 
 ---
