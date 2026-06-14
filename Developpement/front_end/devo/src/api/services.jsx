@@ -18,7 +18,8 @@ export const produitsApi = {
 
 
 export const categoriesApi = {
-  menu:          ()     => api.get('/categories/menu'),   // ← NOUVEAU
+  menu:          ()     => api.get('/categories/menu'),  
+  populaires: (limit) => api.get('/categories/populaires', { params: { limit } }),  
   list:          ()     => api.get('/categories'),
   subcategories: (slug) => api.get(`/categories/${slug}/subcategories`),
 }

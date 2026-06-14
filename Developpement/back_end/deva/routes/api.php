@@ -15,9 +15,9 @@ Route::get('/produits',                   [ProduitController::class, 'index']);
 Route::get('/produits/{produit}',         [ProduitController::class, 'show']);
 Route::post('/produits/recently-viewed',  [ProduitController::class, 'recentlyViewed']);
 
-// routes/api.php — ajoute cette ligne AVANT l'existante /categories :
-
-Route::get('/categories/menu', [CategorieController::class, 'menu']);       // ← NOUVEAU (doit être avant /{slug})
+//categories
+Route::get('/categories/menu', [CategorieController::class, 'menu']);   
+Route::get('/categories/populaires', [CategorieController::class, 'populaires']);  
 Route::get('/categories',      [CategorieController::class, 'index']);
 Route::get('/categories/{slug}/subcategories', [CategorieController::class, 'subcategories']);
 // Artisans
