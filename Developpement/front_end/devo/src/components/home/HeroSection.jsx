@@ -32,7 +32,7 @@ export default function HeroSection() {
       {/* Bouton central avec le Link pour le routage */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
         <Link
-          to="/categories/decoration" 
+          to="/all" 
           className="pointer-events-auto bg-white text-black font-manrope font-extrabold text-[14px] md:text-[13px] tracking-[0.2em] px-8 md:px-12 py-4 rounded-full shadow-2xl hover:bg-gray-100 transition-all duration-300 uppercase transform hover:-translate-y-1"
         >
           Shop Morocco's Best Now

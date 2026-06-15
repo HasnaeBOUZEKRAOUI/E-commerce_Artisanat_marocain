@@ -9,16 +9,12 @@ use Illuminate\Http\Request;
 
 class ProduitController extends Controller
 {
-    /**
-     * GET /api/produits
-     * Params : category, style, sort, min_price, max_price, page, per_page
-     */
+   
     public function index(Request $request)
     {
         $query = Produit::with(['images', 'categorie', 'promotions'])
             ->where('statut', 'actif');
 
-        // Filtre par catégorie — cherche dans la catégorie ET ses enfants
         if ($request->filled('category')) {
             $categorie = Categorie::where('slug', $request->category)->first();
 
@@ -29,13 +25,16 @@ class ProduitController extends Controller
             }
         }
 
-        // ── NOUVEAU : filtre par style ────────────────────────────
+        // Filtre par style 
         if ($request->filled('style')) {
             $query->where('style', $request->style);
         }
+        
+        // Filtre par artisan
         if ($request->filled('artisan')) {
             $query->where('artisan_id', $request->artisan);
         }
+        
         // Filtre par prix
         if ($request->filled('min_price')) {
             $query->where('prix', '>=', (float) $request->min_price);
@@ -44,15 +43,15 @@ class ProduitController extends Controller
             $query->where('prix', '<=', (float) $request->max_price);
         }
 
-        // Tri
-        match ($request->get('sort', 'newest')) {
+        match ($request->get('sort', 'random')) {
             'price_asc'  => $query->orderBy('prix', 'asc'),
             'price_desc' => $query->orderBy('prix', 'desc'),
             'newest'     => $query->latest(),
-            default      => $query->latest(),
+            'random'     => $query->inRandomOrder(), 
+            default      => $query->inRandomOrder(), 
         };
 
-        $perPage = min((int) $request->get('per_page', 20), 100);
+        $perPage = min((int) $request->get('per_page', 40), 100);
 
         return response()->json(
             $query->paginate($perPage)->through(fn($p) => $this->formatProduct($p))
@@ -104,7 +103,7 @@ class ProduitController extends Controller
             'prix_original' => (float) $produit->prix,
             'stock'         => $produit->stock,
             'statut'        => $produit->statut,
-            'style'         => $produit->style,   // ← NOUVEAU
+            'style'         => $produit->style,   
             'image_url'     => $produit->getPrincipaleImage()?->url_image,
             'images'        => $produit->images->map(fn($img) => [
                 'id'         => $img->id,
