@@ -16,7 +16,8 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->decimal('prix', 10, 2);
             $table->integer('stock')->default(0);
-            $table->string('statut')->default('actif'); // actif | inactif | en_attente
+            $table->string('statut')->default('actif'); 
+            $table->string('style')->nullable();
             $table->date('date_ajout')->useCurrent();
             $table->string('slug')->nullable()->unique();  
             $table->timestamps();

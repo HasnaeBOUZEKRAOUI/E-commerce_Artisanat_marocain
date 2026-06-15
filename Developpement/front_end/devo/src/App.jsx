@@ -2,9 +2,14 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import NavBar   from "./components/layout/NavBar";
 import Footer   from "./components/layout/Footer";
 import Home     from "./pages/Home";
+import RegisterPage from "./pages/RegisterPage";
+import ArtisansPage from "./pages/ArtisansPage";
+import ArtisanDetailPage from "./pages/ArtisanDetailPage";
 import CategoryPage from "./pages/CategoryPage";
 import LoginPage from "./pages/LoginPage";
 import CartPage from "./pages/CartPage";
+import StylePage from "./pages/StylePage";
+
 export default function App() {
   return (
     <BrowserRouter>
@@ -14,12 +19,17 @@ export default function App() {
         {/* Page d'accueil */}
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage/>}/>
         {/* Page catégorie  →  ex: /categories/salon-chambre */}
         <Route path="/panier" element={<CartPage />} />        
         <Route path="/categories/:categorySlug" element={<CategoryPage />} />
-
+        <Route path="/artisans"     element={<ArtisansPage />} />
+        <Route path="/artisans/:id" element={<ArtisanDetailPage />} />
+ 
         {/* Page sous-catégorie  →  ex: /categories/salon-chambre/tapis */}
         <Route path="/categories/:categorySlug/:subcategorySlug" element={<CategoryPage />} />
+        <Route path="/styles/:styleSlug" element={<StylePage />} />
+        
       </Routes>
 
       <Footer />

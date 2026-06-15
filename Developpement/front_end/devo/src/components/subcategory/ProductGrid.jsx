@@ -33,7 +33,7 @@ function ProductCard({ product }) {
       id: product.id,
       name: product.name,
       image_url: product.image_url,
-      price: product.price,
+      price: product.prix,
     });
   };
 
@@ -65,7 +65,7 @@ function ProductCard({ product }) {
           {product.description || product.name}
         </p>
         <span className="text-xs font-bold text-gray-900">
-          {product.price} dh
+          {product.prix} dh
         </span>
       </div>
     </Link>

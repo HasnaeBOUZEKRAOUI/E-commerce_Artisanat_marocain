@@ -12,6 +12,9 @@ return new class extends Migration
             $table->id();
             $table->foreignId('utilisateur_id')->constrained('utilisateurs')->cascadeOnDelete();
             $table->string('boutique');
+            $table->string('image_url')->nullable();
+            $table->text('description')->nullable();
+            $table->string('slug')->nullable()->unique();
             $table->decimal('revenu_total', 10, 2)->default(0);
             $table->timestamps();
         });

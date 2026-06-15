@@ -11,7 +11,6 @@ export const authApi = {
 
 // ── Produits ─────────────────────────────────────────────────
 export const produitsApi = {
-  // GET /api/produits?category=tapis&subcategory=...&page=1&per_page=20
   list:   (params) => api.get('/produits', { params }),
   get:    (id)     => api.get(`/produits/${id}`),
 }
@@ -38,6 +37,8 @@ export const recentlyViewedApi = {
 
 // ── Artisans ─────────────────────────────────────────────────
 export const artisansApi = {
-  featured: () => api.get('/artisans/featured'),
-  get:      (id) => api.get(`/artisans/${id}`),
+  list:     (params) => api.get('/artisans', { params }),
+  featured: ()        => api.get('/artisans/featured'),
+  get:      (id)      => api.get(`/artisans/${id}`),
 }
+ 

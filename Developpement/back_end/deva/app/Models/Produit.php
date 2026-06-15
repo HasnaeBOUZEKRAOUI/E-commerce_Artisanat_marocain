@@ -18,8 +18,10 @@ class Produit extends Model
         'prix',
         'stock',
         'statut',
+        'style',       
         'date_ajout',
     ];
+     
 
     protected function casts(): array
     {
