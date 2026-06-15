@@ -9,6 +9,7 @@ import CategoryPage from "./pages/CategoryPage";
 import LoginPage from "./pages/LoginPage";
 import CartPage from "./pages/CartPage";
 import StylePage from "./pages/StylePage";
+import AllProductsPage from "./pages/AllProductPage";
 
 export default function App() {
   return (
@@ -25,7 +26,7 @@ export default function App() {
         <Route path="/categories/:categorySlug" element={<CategoryPage />} />
         <Route path="/artisans"     element={<ArtisansPage />} />
         <Route path="/artisans/:id" element={<ArtisanDetailPage />} />
- 
+        <Route path="/all" element={<AllProductsPage/>}/>
         {/* Page sous-catégorie  →  ex: /categories/salon-chambre/tapis */}
         <Route path="/categories/:categorySlug/:subcategorySlug" element={<CategoryPage />} />
         <Route path="/styles/:styleSlug" element={<StylePage />} />

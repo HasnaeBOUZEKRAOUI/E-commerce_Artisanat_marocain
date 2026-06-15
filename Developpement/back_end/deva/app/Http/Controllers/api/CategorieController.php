@@ -9,10 +9,7 @@ use Illuminate\Http\Request;
 
 class CategorieController extends Controller
 {
-    /**
-     * GET /api/categories/menu
-     * Retourne les 5 grandes catégories avec leurs sous-catégories et sous-sous-catégories
-     */
+    
     public function menu()
     {
         $categories = Categorie::where('niveau', 1)
@@ -47,7 +44,6 @@ class CategorieController extends Controller
         return response()->json(['data' => $categories]);
     }
 
-    /** GET /api/categories — toutes les catégories niveau 1 */
     public function index()
     {
         $categories = Categorie::where('niveau', 1)
@@ -57,14 +53,7 @@ class CategorieController extends Controller
         return response()->json(['data' => $categories]);
     }
 
-    /**
-     * GET /api/categories/populaires
-     * Retourne les catégories niveau 3 (celles qui contiennent les produits)
-     * triées par nombre de produits actifs, avec une image représentative.
-     *
-     * Params optionnels :
-     *   - limit : nombre de catégories à retourner (défaut 6)
-     */
+    
     public function populaires(Request $request)
     {
         $limit = min((int) $request->get('limit', 6), 20);
@@ -76,7 +65,6 @@ class CategorieController extends Controller
             ->limit($limit)
             ->get()
             ->map(function ($cat) {
-                // Récupère l'image du premier produit actif de la catégorie
                 $produit = Produit::where('categorie_id', $cat->id)
                     ->where('statut', 'actif')
                     ->with('images')
@@ -95,7 +83,6 @@ class CategorieController extends Controller
         return response()->json(['data' => $categories]);
     }
 
-    /** GET /api/categories/{slug}/subcategories */
     public function subcategories(string $slug)
     {
         $categorie = Categorie::where('slug', $slug)->firstOrFail();
