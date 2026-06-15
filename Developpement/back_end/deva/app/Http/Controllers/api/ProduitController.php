@@ -11,29 +11,31 @@ class ProduitController extends Controller
 {
     /**
      * GET /api/produits
-     * Params : category, sort, min_price, max_price, page, per_page
+     * Params : category, style, sort, min_price, max_price, page, per_page
      */
     public function index(Request $request)
     {
         $query = Produit::with(['images', 'categorie', 'promotions'])
             ->where('statut', 'actif');
 
-        // Filtre par slug — cherche dans la catégorie ET ses parents
+        // Filtre par catégorie — cherche dans la catégorie ET ses enfants
         if ($request->filled('category')) {
-            $slug = $request->category;
-
-            // Récupère la catégorie cible
-            $categorie = Categorie::where('slug', $slug)->first();
+            $categorie = Categorie::where('slug', $request->category)->first();
 
             if ($categorie) {
-                // Collecte tous les IDs enfants (récursivement)
                 $ids = $this->getAllChildIds($categorie);
                 $ids[] = $categorie->id;
-
                 $query->whereIn('categorie_id', $ids);
             }
         }
 
+        // ── NOUVEAU : filtre par style ────────────────────────────
+        if ($request->filled('style')) {
+            $query->where('style', $request->style);
+        }
+        if ($request->filled('artisan')) {
+            $query->where('artisan_id', $request->artisan);
+        }
         // Filtre par prix
         if ($request->filled('min_price')) {
             $query->where('prix', '>=', (float) $request->min_price);
@@ -57,18 +59,12 @@ class ProduitController extends Controller
         );
     }
 
-    /**
-     * GET /api/produits/{id}
-     */
     public function show(Produit $produit)
     {
         $produit->load(['images', 'categorie', 'caracteristiques', 'promotions']);
         return response()->json($this->formatProduct($produit, true));
     }
 
-    /**
-     * POST /api/produits/recently-viewed
-     */
     public function recentlyViewed(Request $request)
     {
         $ids = $request->validate([
@@ -88,7 +84,6 @@ class ProduitController extends Controller
         ]);
     }
 
-    // ─── Récupère récursivement tous les IDs enfants ───────────────
     private function getAllChildIds(Categorie $cat): array
     {
         $ids = [];
@@ -99,7 +94,6 @@ class ProduitController extends Controller
         return $ids;
     }
 
-    // ─── Format unifié ─────────────────────────────────────────────
     private function formatProduct(Produit $produit, bool $full = false): array
     {
         $base = [
@@ -110,6 +104,7 @@ class ProduitController extends Controller
             'prix_original' => (float) $produit->prix,
             'stock'         => $produit->stock,
             'statut'        => $produit->statut,
+            'style'         => $produit->style,   // ← NOUVEAU
             'image_url'     => $produit->getPrincipaleImage()?->url_image,
             'images'        => $produit->images->map(fn($img) => [
                 'id'         => $img->id,

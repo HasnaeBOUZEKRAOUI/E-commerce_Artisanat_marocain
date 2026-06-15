@@ -12,19 +12,25 @@ class AuthController extends Controller
 {
     public function register(Request $request)
     {
+        // 🌟 Synchronisé avec le formulaire React (password & password_confirmation)
         $data = $request->validate([
-            'nom'          => 'required|string|max:100',
-            'prenom'       => 'required|string|max:100',
-            'email'        => 'required|email|unique:utilisateurs,email',
-            'mot_de_passe' => 'required|string|min:8|confirmed',
-            'telephone'    => 'nullable|string',
-            'adresse'      => 'nullable|string',
-            'role'         => 'in:client,artisan',
+            'nom'       => 'required|string|max:100',
+            'prenom'    => 'required|string|max:100',
+            'email'     => 'required|email|unique:utilisateurs,email',
+            'password'  => 'required|string|min:8|confirmed', 
+            'telephone' => 'nullable|string',
+            'adresse'   => 'nullable|string',
+            'role'      => 'in:client,artisan',
         ]);
 
+        // On prépare les données proprement pour le modèle Utilisateur
         $user = Utilisateur::create([
-            ...$data,
-            'mot_de_passe' => Hash::make($data['mot_de_passe']),
+            'nom'          => $data['nom'],
+            'prenom'       => $data['prenom'],
+            'email'        => $data['email'],
+            'mot_de_passe' => Hash::make($data['password']), // 🌟 Hachage du bon champ
+            'telephone'    => $data['telephone'] ?? null,
+            'adresse'      => $data['adresse'] ?? null,
             'role'         => $data['role'] ?? 'client',
         ]);
 

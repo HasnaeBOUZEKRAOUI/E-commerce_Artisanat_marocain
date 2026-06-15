@@ -22,7 +22,9 @@ Route::get('/categories',      [CategorieController::class, 'index']);
 Route::get('/categories/{slug}/subcategories', [CategorieController::class, 'subcategories']);
 // Artisans
 Route::get('/artisans/featured', [ArtisanController::class, 'featured']);
-
+Route::get('/artisans',          [ArtisanController::class, 'index']);
+Route::get('/artisans/{artisan}', [ArtisanController::class, 'show']);
+ 
 // ── Routes protégées (token Sanctum requis) ────────────────────────────────
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
