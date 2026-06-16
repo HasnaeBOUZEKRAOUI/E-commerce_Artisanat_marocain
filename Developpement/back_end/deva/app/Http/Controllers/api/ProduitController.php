@@ -1,5 +1,5 @@
 <?php
-// app/Http/Controllers/Api/ProduitController.php
+
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
@@ -9,7 +9,6 @@ use Illuminate\Http\Request;
 
 class ProduitController extends Controller
 {
-   
     public function index(Request $request)
     {
         $query = Produit::with(['images', 'categorie', 'promotions'])
@@ -25,17 +24,14 @@ class ProduitController extends Controller
             }
         }
 
-        // Filtre par style 
         if ($request->filled('style')) {
             $query->where('style', $request->style);
         }
         
-        // Filtre par artisan
         if ($request->filled('artisan')) {
             $query->where('artisan_id', $request->artisan);
         }
         
-        // Filtre par prix
         if ($request->filled('min_price')) {
             $query->where('prix', '>=', (float) $request->min_price);
         }
@@ -47,7 +43,7 @@ class ProduitController extends Controller
             $taille = $request->taille;
             $query->whereHas('caracteristiques', function ($q) use ($taille) {
                 $q->where(function ($sub) {
-                    $sub->where('nom', 'LIKE', '%tailille%') // Gère d'éventuels typos d'import
+                    $sub->where('nom', 'LIKE', '%tailille%')
                         ->orWhere('nom', 'LIKE', '%taille%')
                         ->orWhere('nom', 'LIKE', '%size%');
                 })
@@ -156,5 +152,24 @@ class ProduitController extends Controller
         }
 
         return $base;
+    }
+
+    public function recommandations($id)
+    {
+        $produit = Produit::findOrFail($id);
+
+        $recommandations = Produit::with(['images', 'categorie'])
+            ->where('categorie_id', $produit->categorie_id)
+            ->where('id', '!=', $id)
+            ->where('statut', 'actif')
+            ->where('stock', '>', 0) 
+            ->inRandomOrder()      
+            ->take(4)
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $recommandations->map(fn($p) => $this->formatProduct($p))
+        ]);
     }
 }

@@ -1,6 +1,14 @@
+import { Link } from "react-router-dom";
+
 export default function ProductCard({ img, description, price, onAdd }) {
+  const handleButtonClick = (e) => {
+    e.preventDefault();  
+    e.stopPropagation(); 
+    onAdd();           
+  };
   return (
     <div className="group flex flex-col gap-3">
+      
       {/* Image container */}
       <div className="aspect-square overflow-hidden border border-gray-300 rounded-tl-xl rounded-tr-xl rounded-bl-xl rounded-br-[60px] relative bg-white p-2">
         <img
@@ -11,7 +19,7 @@ export default function ProductCard({ img, description, price, onAdd }) {
 
         {/* Bouton panier */}
         <button
-          onClick={onAdd}   // ✅ ICI connexion au cart
+          onClick={handleButtonClick}
           className="absolute bottom-4 right-4 bg-black text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
         >
           <svg

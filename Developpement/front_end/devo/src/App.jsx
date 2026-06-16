@@ -10,6 +10,7 @@ import LoginPage from "./pages/LoginPage";
 import CartPage from "./pages/CartPage";
 import StylePage from "./pages/StylePage";
 import AllProductsPage from "./pages/AllProductPage";
+import ProductPage from "./pages/ProductPage";
 
 export default function App() {
   return (
@@ -30,7 +31,7 @@ export default function App() {
         {/* Page sous-catégorie  →  ex: /categories/salon-chambre/tapis */}
         <Route path="/categories/:categorySlug/:subcategorySlug" element={<CategoryPage />} />
         <Route path="/styles/:styleSlug" element={<StylePage />} />
-        
+        <Route path="/produits/:id" element={<ProductPage />} />    
       </Routes>
 
       <Footer />

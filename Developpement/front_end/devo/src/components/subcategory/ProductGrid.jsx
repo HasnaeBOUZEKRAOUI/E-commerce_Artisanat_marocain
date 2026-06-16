@@ -28,7 +28,8 @@ function ProductCard({ product }) {
 
   const handleAdd = (e) => {
     e.preventDefault();
-
+    e.stopPropagation(); // empêche la propagation
+  
     addItem({
       id: product.id,
       name: product.nom,
