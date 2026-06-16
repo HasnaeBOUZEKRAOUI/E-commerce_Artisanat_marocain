@@ -1,30 +1,28 @@
-// src/pages/CategoryPage.jsx
 import { useState, useEffect } from 'react'
-import { useParams }         from 'react-router-dom'
-import { categoriesApi }     from '../api/services'
-import Breadcrumb            from '../components/ui/Breadcrumb'
-import SubCategoryBar        from '../components/subcategory/SubCategoryBar'
-import FilterSidebar         from '../components/subcategory/FilterSidebar'
-import ProductGrid           from '../components/subcategory/ProductGrid'
-import Pagination            from '../components/ui/Pagination'
-import RecentlyViewed        from '../components/subcategory/RecentlyViewed'
-import Newsletter            from '../components/home/Newsletter'
-import useProducts           from '../hooks/useProducts'
-import useRecentlyViewed     from '../hooks/useRecentlyViewed'
+import { useParams } from 'react-router-dom'
+import { categoriesApi } from '../api/services'
+import Breadcrumb from '../components/ui/Breadcrumb'
+import SubCategoryBar from '../components/subcategory/SubCategoryBar'
+import FilterSidebar from '../components/subcategory/FilterSidebar'
+import ProductGrid from '../components/subcategory/ProductGrid'
+import Pagination from '../components/ui/Pagination'
+import RecentlyViewed from '../components/subcategory/RecentlyViewed'
+import Newsletter from '../components/home/Newsletter'
+import useProducts from '../hooks/useProducts'
+import useRecentlyViewed from '../hooks/useRecentlyViewed'
 
 export default function CategoryPage() {
   const { categorySlug } = useParams()
 
   const [subcategories, setSubcategories] = useState([])
   const [activeSubSlug, setActiveSubSlug] = useState(null)
-  const [filters, setFiltersState]        = useState({})
+  const [filters, setFiltersState] = useState({})
 
   const { products, meta, loading, params, setFilters, setPage, resetFilters } =
     useProducts({ category: categorySlug, per_page: 20 })
 
   const { products: recentProducts, loading: recentLoading } = useRecentlyViewed()
 
-  // Charge les sous-catégories depuis Laravel
   useEffect(() => {
     if (!categorySlug) return
     categoriesApi.subcategories(categorySlug)
@@ -32,19 +30,39 @@ export default function CategoryPage() {
         const data = res.data.data ?? res.data
         if (data?.length) setSubcategories(data)
       })
-      .catch(() => {}) // sous-catégories facultatives
+      .catch(() => {})
   }, [categorySlug])
 
   const handleSubcategorySelect = (slug) => {
     const next = slug === activeSubSlug ? null : slug
     setActiveSubSlug(next)
-    setFilters({ subcategory: next || undefined, page: 1 })
+    setFilters({ category: next || categorySlug, page: 1 })
   }
 
   const handleFilterChange = (key, value) => {
-    const updated = { ...filters, [key]: value }
-    setFiltersState(updated)
-    setFilters(updated)
+    const updatedFiltersState = { ...filters, [key]: value }
+    setFiltersState(updatedFiltersState)
+
+    let apiKey = key
+    if (key === 'prix_min') apiKey = 'min_price'
+    if (key === 'prix_max') apiKey = 'max_price'
+
+    const apiFilters = {}
+    
+    Object.keys(updatedFiltersState).forEach((k) => {
+      const val = updatedFiltersState[k]
+      if (val !== undefined && val !== '') {
+        if (k === 'prix_min') apiFilters.min_price = val
+        else if (k === 'prix_max') apiFilters.max_price = val
+        else apiFilters[k] = val
+      }
+    })
+
+    setFilters({
+      category: activeSubSlug || categorySlug,
+      ...apiFilters,
+      page: 1
+    })
   }
 
   const handleReset = () => {
