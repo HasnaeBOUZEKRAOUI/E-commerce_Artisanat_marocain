@@ -47,6 +47,11 @@ function ProductGrid({ title, slug, products, loading, error }) {
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-x-6 gap-y-10">
           {products.map((product) => (
+            <Link 
+              key={product.id} 
+              to={`/produits/${product.id}`} 
+              className="group block"
+            >
             <ProductCard
               key={product.id}
               img={product.image_url}
@@ -60,6 +65,7 @@ function ProductGrid({ title, slug, products, loading, error }) {
                 price: product.prix, // Envoie le prix remisé (actuel) au panier
               })}
             />
+            </Link>
           ))}
         </div>
       )}

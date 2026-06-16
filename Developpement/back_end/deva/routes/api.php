@@ -14,6 +14,7 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::get('/produits',                   [ProduitController::class, 'index']);
 Route::get('/produits/{produit}',         [ProduitController::class, 'show']);
 Route::post('/produits/recently-viewed',  [ProduitController::class, 'recentlyViewed']);
+Route::get('/produits/{id}/recommandations', [ProduitController::class, 'recommandations']);
 
 //categories
 Route::get('/categories/menu', [CategorieController::class, 'menu']);   
@@ -31,7 +32,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/me',      [AuthController::class, 'me']);
 
     // Commandes
-    Route::get('/commandes',  [CommandeController::class, 'index']);
-    Route::post('/commandes', [CommandeController::class, 'store']);
-    Route::get('/commandes/{commande}', [CommandeController::class, 'show']);
+    Route::post('/orders/create', [CommandeController::class, 'createOrder']);
+Route::post('/orders/{orderId}/capture', [CommandeController::class, 'captureOrder']);
 });

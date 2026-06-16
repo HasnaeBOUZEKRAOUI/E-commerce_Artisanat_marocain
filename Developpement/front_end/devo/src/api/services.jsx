@@ -13,6 +13,7 @@ export const authApi = {
 export const produitsApi = {
   list:   (params) => api.get('/produits', { params }),
   get:    (id)     => api.get(`/produits/${id}`),
+  recommandations: (id)     => api.get(`/produits/${id}/recommandations`), 
 }
 
 

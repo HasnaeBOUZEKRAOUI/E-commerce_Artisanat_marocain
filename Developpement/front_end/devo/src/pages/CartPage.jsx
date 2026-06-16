@@ -1,6 +1,6 @@
 // src/pages/CartPage.jsx
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useCartContext }  from '../context/CartContext'
 import { commandesApi }   from '../api/services'
 import CartItem           from '../components/cart/CartItem'
@@ -60,7 +60,9 @@ export default function CartPage() {
               </div>
               <div className="border border-gray-100 rounded divide-y divide-gray-100 px-4">
                 {items.map((item) => (
+                  <Link to={`/produits/${item.id}`} key={item.id} className="block">
                   <CartItem key={item.id} item={item} onUpdate={updateQty} onRemove={removeItem} />
+                  </Link>
                 ))}
               </div>
             </div>
