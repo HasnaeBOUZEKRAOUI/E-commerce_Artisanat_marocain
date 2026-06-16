@@ -1,13 +1,13 @@
 import { useState } from "react";
 
 const COULEURS = [
-  { label: "Noir", value: "noir", hex: "#1a1a1a" },
-  { label: "Blanc", value: "blanc", hex: "#f5f5f5" },
-  { label: "Rouge", value: "rouge", hex: "#c0392b" },
-  { label: "Bleu", value: "bleu", hex: "#2980b9" },
-  { label: "Vert", value: "vert", hex: "#27ae60" },
+  { label: "Black", value: "Black", hex: "#1a1a1a" },
+  { label: "Blanc", value: "white", hex: "#f5f5f5" },
+  { label: "Rouge", value: "red", hex: "#c0392b" },
+  { label: "Bleu", value: "blue", hex: "#2980b9" },
+  { label: "Vert", value: "green", hex: "#27ae60" },
   { label: "Beige", value: "beige", hex: "#d4b896" },
-  { label: "Or", value: "or", hex: "#d4af37" },
+  { label: "Or", value: "gold", hex: "#d4af37" },
 ];
 
 const TAILLES = ["XS", "S", "M", "L", "XL", "Unique"];

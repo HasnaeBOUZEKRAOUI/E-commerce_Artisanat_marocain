@@ -42,7 +42,38 @@ class ProduitController extends Controller
         if ($request->filled('max_price')) {
             $query->where('prix', '<=', (float) $request->max_price);
         }
-
+        
+        if ($request->filled('taille')) {
+            $taille = $request->taille;
+            $query->whereHas('caracteristiques', function ($q) use ($taille) {
+                $q->where(function ($sub) {
+                    $sub->where('nom', 'LIKE', '%tailille%') // Gère d'éventuels typos d'import
+                        ->orWhere('nom', 'LIKE', '%taille%')
+                        ->orWhere('nom', 'LIKE', '%size%');
+                })
+                ->where('valeur', 'LIKE', '%' . $taille . '%');
+            });
+        }
+        if ($request->filled('couleur')) {
+            $couleur = $request->couleur;
+            $query->whereHas('caracteristiques', function ($q) use ($couleur) {
+                $q->where(function ($sub) {
+                    $sub->where('nom', 'LIKE', '%couleur%')
+                        ->orWhere('nom', 'LIKE', '%color%');
+                })
+                ->where('valeur', 'LIKE', '%' . $couleur . '%');
+            });
+        }
+        if ($request->filled('disponibilite')) {
+            if ($request->disponibilite === 'in_stock') {
+                $query->where('stock', '>', 0);
+            } elseif ($request->disponibilite === 'out_of_stock') {
+                $query->where(function ($q) {
+                    $q->where('stock', '<=', 0)
+                      ->orWhereNull('stock');
+                });
+            }
+        }
         match ($request->get('sort', 'random')) {
             'price_asc'  => $query->orderBy('prix', 'asc'),
             'price_desc' => $query->orderBy('prix', 'desc'),
