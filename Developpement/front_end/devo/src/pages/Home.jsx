@@ -14,7 +14,6 @@ export default function Home() {
       <StyleSection />
       <ArtisansSection />
       <ProductsSection />
-      <Newsletter />
       <WhyUs />
     </main>
   );

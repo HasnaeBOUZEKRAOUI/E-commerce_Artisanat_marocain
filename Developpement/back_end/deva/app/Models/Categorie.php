@@ -23,4 +23,21 @@ class Categorie extends Model
     {
         return $this->hasMany(Produit::class);
     }
+    public function getPrincipaleImageAttribute()
+{
+    if ($this->image_url) {
+        return asset('storage/' . $this->image_url);
+    }
+
+    $produit = $this->produits()
+        ->where('statut', 'actif')
+        ->with('images')
+        ->first();
+
+    if ($produit) {
+        return $produit->getPrincipaleImage()?->url_image;
+    }
+
+    return asset('images/default-category.jpg'); // Image de secours
+}
 }
