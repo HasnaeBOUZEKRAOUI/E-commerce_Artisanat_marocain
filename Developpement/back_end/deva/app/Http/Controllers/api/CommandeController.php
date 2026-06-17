@@ -9,20 +9,54 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 
 class CommandeController extends Controller
 {
     public function index(Request $request)
-    {
-        $commandes = $request->user()
-            ->client
-            ->commandes()
-            ->with(['lignes.produit'])
-            ->latest()
-            ->paginate(10);
+{
+    // 1. On charge les commandes, les lignes, les produits ET leurs images
+    $commandes = $request->user()
+        ->client
+        ->commandes()
+        ->with(['lignes.produit.images']) 
+        ->latest()
+        ->paginate(10);
 
-        return response()->json($commandes);
-    }
+    // 2. Transformation pour injecter l'URL en utilisant ton helper de modèle
+    $commandes->getCollection()->transform(function ($commande) {
+        if ($commande->lignes) {
+            foreach ($commande->lignes as $ligne) {
+                if ($ligne->produit) {
+                    
+                    // Utilisez ton helper personnalisé du modèle Produit ! 🎯
+                    $imagePrincipale = $ligne->produit->getPrincipaleImage();
+                    
+                    if ($imagePrincipale) {
+                        /* 
+                         * ⚠️ ATTENTION : Remplace 'url_image' ci-dessous par le NOM EXACT 
+                         * de la colonne dans ta table 'images' (ex: chemin, path, filename...)
+                         */
+                        $imagePath = $imagePrincipale->url_image; 
+
+                        // Si c'est déjà une URL complète (ex: http://...), on la garde telle quelle
+                        if ($imagePath && !filter_var($imagePath, FILTER_VALIDATE_URL)) {
+                            $ligne->produit->image_url = asset('storage/' . $imagePath);
+                        } else {
+                            $ligne->produit->image_url = $imagePath;
+                        }
+                    } else {
+                        // Image de secours si aucune ligne n'existe dans la table images
+                        $ligne->produit->image_url = asset('storage/products/placeholder.jpg');
+                    }
+                }
+            }
+        }
+        return $commande;
+    });
+
+    return response()->json($commandes);
+}
 
     private function getPayPalAccessToken()
     {
@@ -60,7 +94,24 @@ class CommandeController extends Controller
         DB::beginTransaction();
 
         try {
-            $commande = $request->user()->client->commandes()->create([
+            $user = $request->user();
+        
+            if (!$user) {
+                throw new \Exception("Utilisateur non authentifié dans l'API.");
+            }
+        
+            if (!$user->client) {
+                $user->load('client'); 
+            }
+        
+            if (!$user->client) {
+                throw new \Exception("L'utilisateur connecté (ID: {$user->id}) n'a pas de profil associé dans la table 'clients'.");
+            }
+        
+            $clientId = $user->client->id; 
+
+            $commande = Commande::create([
+                'client_id'         => $clientId, 
                 'date_commande'     => now()->toDateString(),
                 'montant_total'     => $data['total'],
                 'statut'            => 'en_attente',
@@ -75,33 +126,34 @@ class CommandeController extends Controller
                 ]);
             }
 
-            $token = $this->getPayPalAccessToken();
-            $url = env('PAYPAL_MODE') === 'sandbox' 
-                ? 'https://api-m.sandbox.paypal.com/v2/checkout/orders' 
-                : 'https://api-m.paypal.com/v2/checkout/orders';
 
-            $response = Http::withToken($token)->post($url, [
-                "intent" => "CAPTURE",
-                "purchase_units" => [
-                    [
-                        "reference_id" => (string)$commande->id,
-                        "amount" => [
-                            "currency_code" => "EUR",
-                            "value" => strval(round($data['total'] / 11, 2))
-                        ]
-                    ]
-                ]
-            ]);
+$token = $this->getPayPalAccessToken();
+$url = env('PAYPAL_MODE') === 'sandbox' 
+    ? 'https://api-m.sandbox.paypal.com/v2/checkout/orders' 
+    : 'https://api-m.paypal.com/v2/checkout/orders';
 
-            if ($response->failed()) {
-                throw new \Exception("Erreur lors de la création de la commande PayPal: " . $response->body());
-            }
+$response = Http::withToken($token)->post($url, [
+    "intent" => "CAPTURE",
+    "purchase_units" => [
+        [
+            "reference_id" => (string)$commande->id, 
+            "amount" => [
+                "currency_code" => "EUR",
+                "value" => strval(round($data['total'] / 11, 2))
+            ]
+        ]
+    ]
+]);
 
-            $paypalOrder = $response->json();
+if ($response->failed()) {
+    throw new \Exception("Erreur lors de la création de la commande PayPal: " . $response->body());
+}
 
-            $commande->update([
-                'paypal_order_id' => $paypalOrder['id']
-            ]);
+$paypalOrder = $response->json();
+
+$commande->update([
+    'paypal_order_id' => $paypalOrder['id'] 
+]);
 
             DB::commit();
 
@@ -110,51 +162,73 @@ class CommandeController extends Controller
                 'commande_locale_id' => $commande->id
             ], 201);
 
-        } catch (\Throwable $e) {
-            DB::rollBack();
-            Log::error("Erreur CreateOrder: " . $e->getMessage());
-            return response()->json(['message' => 'Erreur lors de l\'initialisation de la commande.'], 500);
+        } catch (\Exception $e) {
+            DB::rollBack(); 
+            
+            return response()->json([
+                'message' => "Erreur lors de l'initialisation de la commande.",
+                'error_detalilee' => $e->getMessage(),
+                'fichier' => $e->getFile(),
+                'ligne' => $e->getLine()
+            ], 500);
         }
     }
-
     public function captureOrder($orderId)
     {
         DB::beginTransaction();
-
+    
         try {
-            $commande = Commande::where('paypal_order_id', $orderId)->firstOrFail();
+            $commande = Commande::where('paypal_order_id', $orderId)->first();
+            
+            if (!$commande) {
+                throw new \Exception("Commande introuvable en base de données pour l'ID PayPal : {$orderId}");
+            }
+    
+$token = $this->getPayPalAccessToken();
+$url = env('PAYPAL_MODE') === 'sandbox' 
+    ? "https://api-m.sandbox.paypal.com/v2/checkout/orders/{$orderId}/capture" 
+    : "https://api-m.paypal.com/v2/checkout/orders/{$orderId}/capture";
 
-            $token = $this->getPayPalAccessToken();
-            $url = env('PAYPAL_MODE') === 'sandbox' 
-                ? "https://api-m.sandbox.paypal.com/v2/checkout/orders/{$orderId}/capture" 
-                : "https://api-m.paypal.com/v2/checkout/orders/{$orderId}/capture";
+$response = Http::withToken($token)
+    ->withBody('{}', 'application/json') 
+    ->post($url);
 
-            $response = Http::withToken($token)
-                ->withHeaders(['Content-Type' => 'application/json'])
-                ->post($url);
-
-            $result = $response->json();
-
+$result = $response->json();
+    
             if (isset($result['status']) && $result['status'] === 'COMPLETED') {
                 
                 $commande->update(['statut' => 'paye']);
-
+    
                 $commande->load('lignes');
                 foreach ($commande->lignes as $ligne) {
-                    Produit::where('id', $ligne->produit_id)
-                        ->decrement('stock', $ligne->quantite);
+                    $produit = Produit::find($ligne->produit_id);
+                    if ($produit) {
+                        $produit->decrement('stock', $ligne->quantite); 
+                    }
                 }
-
+    
                 DB::commit();
-                return response()->json(['status' => 'COMPLETED', 'message' => 'Paiement et commande validés !']);
+                return response()->json([
+                    'status' => 'COMPLETED', 
+                    'message' => 'Paiement et commande validés !'
+                ]);
             }
-
-            throw new \Exception("Le paiement n'a pas été validé par PayPal (Statut: " . ($result['status'] ?? 'Inconnu') . ")");
-
+    
+            // Si PayPal renvoie une erreur ou un autre statut
+            $erreurPaypal = $result['message'] ?? json_stringify($result);
+            throw new \Exception("PayPal n'a pas validé la capture. Réponse : " . $erreurPaypal);
+    
         } catch (\Throwable $e) {
             DB::rollBack();
-            Log::error("Erreur CaptureOrder: " . $e->getMessage());
-            return response()->json(['message' => 'Erreur lors de la validation du paiement.'], 500);
+            Log::error("Erreur CaptureOrder critique : " . $e->getMessage());
+            
+            // 💡 On renvoie l'erreur système brute à React pour l'afficher à l'écran
+            return response()->json([
+                'message' => 'Erreur lors de la validation du paiement.',
+                'error_detaillee' => $e->getMessage(),
+                'fichier' => $e->getFile(),
+                'ligne' => $e->getLine()
+            ], 500);
         }
     }
 }

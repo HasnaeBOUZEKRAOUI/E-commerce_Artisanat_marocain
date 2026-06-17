@@ -31,7 +31,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me',      [AuthController::class, 'me']);
 
-    // Commandes
+   });
+Route::middleware('auth:sanctum')->group(function () {
     Route::post('/orders/create', [CommandeController::class, 'createOrder']);
-Route::post('/orders/{orderId}/capture', [CommandeController::class, 'captureOrder']);
-});
+    Route::post('/orders/{orderId}/capture', [CommandeController::class, 'captureOrder']);});
+Route::middleware('auth:sanctum')->group(function () {
+        Route::get('/commandes', [CommandeController::class, 'index']);
+    });

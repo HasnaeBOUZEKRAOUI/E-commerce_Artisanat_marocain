@@ -24,11 +24,6 @@ export const categoriesApi = {
   subcategories: (slug) => api.get(`/categories/${slug}/subcategories`),
 }
 
-// ── Panier / Commandes ───────────────────────────────────────
-export const commandesApi = {
-  creer: (data) => api.post('/commandes', data),
-  // data = { items: [{product_id, quantity, price}], adresse_livraison, note, total }
-}
 
 // ── Produits récemment consultés ─────────────────────────────
 export const recentlyViewedApi = {
@@ -42,4 +37,52 @@ export const artisansApi = {
   featured: ()        => api.get('/artisans/featured'),
   get:      (id)      => api.get(`/artisans/${id}`),
 }
- 
+
+export const paypalApi = {
+
+  createOrder:      (data)    => api.post('/orders/create', data),
+  captureOrder:     (orderId) => api.post(`/orders/${orderId}/capture`),
+}
+
+// ── Avis ──────────────────────────────────────────────────────────────────────
+export const avisApi = {
+  liste:            (produitId)          => api.get(`/produits/${produitId}/avis`),
+  creer:            (produitId, data)    => api.post(`/produits/${produitId}/avis`, data),
+  supprimer:        (avisId)             => api.delete(`/avis/${avisId}`),
+}
+
+// ── Notifications ─────────────────────────────────────────────────────────────
+export const notificationsApi = {
+  // GET /api/notifications  (token requis)
+  liste:            ()        => api.get('/notifications'),
+
+  // PUT /api/notifications/{id}/lue  (token requis)
+  marquerLue:       (id)      => api.put(`/notifications/${id}/lue`),
+
+  // DELETE /api/notifications/{id}  (token requis)
+  supprimer:        (id)      => api.delete(`/notifications/${id}`),
+}
+
+// ── Profil utilisateur ────────────────────────────────────────────────────────
+export const profilApi = {
+  // GET /api/me  (token requis)
+  get:              ()        => api.get('/me'),
+
+  // PUT /api/profil  { nom, prenom, telephone, adresse }  (token requis)
+  update:           (data)    => api.put('/profil', data),
+
+  // PUT /api/profil/password  { current_password, password, password_confirmation }
+  updatePassword:   (data)    => api.put('/profil/password', data),
+}
+
+
+export const commandesApi = {
+  // GET /api/commandes  (token requis)
+  liste:            (params)  => api.get('/commandes', { params }),
+
+  // GET /api/commandes/{id}  (token requis)
+  get:              (id)      => api.get(`/commandes/${id}`),
+
+  // POST /api/commandes  { items, adresse_livraison, mode_paiement }  (token requis)
+  creer:            (data)    => api.post('/commandes', data),
+}

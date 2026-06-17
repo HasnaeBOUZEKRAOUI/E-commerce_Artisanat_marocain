@@ -11,6 +11,8 @@ import CartPage from "./pages/CartPage";
 import StylePage from "./pages/StylePage";
 import AllProductsPage from "./pages/AllProductPage";
 import ProductPage from "./pages/ProductPage";
+import CheckoutPage from "./pages/CheckoutPage";
+import MesCommandes from "./pages/MesCommandes";
 
 export default function App() {
   return (
@@ -31,7 +33,9 @@ export default function App() {
         {/* Page sous-catégorie  →  ex: /categories/salon-chambre/tapis */}
         <Route path="/categories/:categorySlug/:subcategorySlug" element={<CategoryPage />} />
         <Route path="/styles/:styleSlug" element={<StylePage />} />
-        <Route path="/produits/:id" element={<ProductPage />} />    
+        <Route path="/produits/:id" element={<ProductPage />} />  
+        <Route path="/checkoutPage" element={<CheckoutPage/>}/>
+        <Route path="/commandes" element={<MesCommandes />} />
       </Routes>
 
       <Footer />

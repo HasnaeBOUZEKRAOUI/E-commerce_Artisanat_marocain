@@ -14,6 +14,7 @@ class Commande extends Model
         'montant_total',
         'statut',
         'adresse_livraison',
+        'paypal_order_id',
     ];
 
     protected function casts(): array
