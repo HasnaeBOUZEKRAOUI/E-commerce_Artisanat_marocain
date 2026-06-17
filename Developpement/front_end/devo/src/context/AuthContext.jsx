@@ -15,7 +15,10 @@ export function AuthProvider({ children }) {
     const token = localStorage.getItem('auth_token')
     if (token) {
       authApi.me()
-        .then((res) => setUser(res.data))
+        .then((res) => {
+          localStorage.setItem('user', JSON.stringify(res.data))
+          setUser(res.data)
+        })
         .catch(() => {
           localStorage.removeItem('auth_token')
           localStorage.removeItem('user')
@@ -49,10 +52,10 @@ export function AuthProvider({ children }) {
     localStorage.removeItem('user')
     setUser(null)
   }
-
+  const clientId = user && user.role === 'client' && user.client ? user.client.id : null;
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout }}>
-      {!loading && children}
+    <AuthContext.Provider value={{ user, clientId, loading, login, register, logout }}>
+        {!loading && children}
     </AuthContext.Provider>
   )
 }

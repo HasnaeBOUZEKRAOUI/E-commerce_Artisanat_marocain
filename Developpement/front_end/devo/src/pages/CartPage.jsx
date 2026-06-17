@@ -2,7 +2,6 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useCartContext }  from '../context/CartContext'
-import { commandesApi }   from '../api/services'
 import CartItem           from '../components/cart/CartItem'
 import OrderSummary       from '../components/cart/OrderSummary'
 import EmptyCart          from '../components/cart/EmptyCart'
@@ -16,33 +15,22 @@ export default function CartPage() {
   const [checkoutLoading, setCheckoutLoading] = useState(false)
   const navigate = useNavigate()
 
-  const handleCheckout = async (note) => {
+  const handleCheckout = (note) => {
     const token = localStorage.getItem('auth_token')
     if (!token) {
       navigate('/login')
       return
     }
-
-    setCheckoutLoading(true)
-    try {
-      const { data } = await commandesApi.creer({
-        items: items.map((i) => ({
-          product_id: i.id,
-          quantity:   i.quantity,
-          price:      i.price,
-        })),
-        note,
-        total: totalPrice,
-      })
-      clearCart()
-      navigate(`/commande/${data.id ?? 'confirmation'}`)
-    } catch (err) {
-      alert(err.response?.data?.message ?? 'Erreur de commande. Réessayez.')
-    } finally {
-      setCheckoutLoading(false)
-    }
+  
+    // On redirige vers la page checkout en passant les infos du panier en arrière-plan (state)
+    navigate('/checkoutPage', { 
+      state: { 
+        items: items,
+        totalPrice: totalPrice,
+        note: note 
+      } 
+    })
   }
-
   return (
     <main className="min-h-screen bg-white">
       <div className="max-w-6xl mx-auto px-4 py-10">
