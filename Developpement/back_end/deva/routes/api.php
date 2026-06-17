@@ -30,7 +30,8 @@ Route::get('/artisans/{artisan}', [ArtisanController::class, 'show']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me',      [AuthController::class, 'me']);
-
+    Route::get('/user/profil', [AuthController::class, 'show']);
+    Route::put('/user/profil/update', [AuthController::class, 'update']);
    });
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/orders/create', [CommandeController::class, 'createOrder']);

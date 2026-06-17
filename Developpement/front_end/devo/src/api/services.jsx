@@ -25,9 +25,7 @@ export const categoriesApi = {
 }
 
 
-// ── Produits récemment consultés ─────────────────────────────
 export const recentlyViewedApi = {
-  // POST ids[] → Laravel renvoie les produits correspondants
   get: (ids) => api.post('/produits/recently-viewed', { ids }),
 }
 
@@ -65,24 +63,15 @@ export const notificationsApi = {
 
 // ── Profil utilisateur ────────────────────────────────────────────────────────
 export const profilApi = {
-  // GET /api/me  (token requis)
-  get:              ()        => api.get('/me'),
+  get:              ()        => api.get('/user/profil'),
 
-  // PUT /api/profil  { nom, prenom, telephone, adresse }  (token requis)
-  update:           (data)    => api.put('/profil', data),
+  update:           (data)    => api.put('/user/profil/update', data),
 
-  // PUT /api/profil/password  { current_password, password, password_confirmation }
-  updatePassword:   (data)    => api.put('/profil/password', data),
-}
+  }
 
 
 export const commandesApi = {
-  // GET /api/commandes  (token requis)
   liste:            (params)  => api.get('/commandes', { params }),
-
-  // GET /api/commandes/{id}  (token requis)
   get:              (id)      => api.get(`/commandes/${id}`),
-
-  // POST /api/commandes  { items, adresse_livraison, mode_paiement }  (token requis)
   creer:            (data)    => api.post('/commandes', data),
 }

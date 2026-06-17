@@ -83,15 +83,24 @@ class CategorieController extends Controller
         return response()->json(['data' => $categories]);
     }
 
+    // app/Http/Controllers/Api/CategorieController.php
+
     public function subcategories(string $slug)
     {
         $categorie = Categorie::where('slug', $slug)->firstOrFail();
-
+    
         $subs = Categorie::where('parent_id', $categorie->id)
             ->with(['enfants:id,parent_id,nom,slug'])
-            ->select('id', 'parent_id', 'nom', 'slug')
-            ->get();
-
+            ->get()
+            ->map(function ($sub) {
+                return [
+                    'id'        => $sub->id,
+                    'nom'       => $sub->nom,
+                    'slug'      => $sub->slug,
+                    'image_url' => $sub->principale_image 
+                ];
+            });
+    
         return response()->json(['data' => $subs]);
     }
 }

@@ -36,15 +36,8 @@ export default function ArtisansSection() {
     <section className="py-10 bg-white">
       <div className="max-w-5xl mx-auto px-6">
         <div className="flex items-center justify-between mb-10">
-          <h2 className="font-serif text-xs md:text-3xl font-medium tracking-tight text-black">
-            Artisans du Mois
-          </h2>
-          <Link
-            to="/artisans"
-            className="font-manrope text-[12px] text-gray-900 hover:text-amber-700 font-semibold tracking-widest uppercase flex items-center gap-1"
-          >
-            Voir tous les artisans →
-          </Link>
+          
+          
         </div>
 
         <div className="flex flex-col md:flex-row items-center md:items-end justify-center gap-12 md:gap-16">
