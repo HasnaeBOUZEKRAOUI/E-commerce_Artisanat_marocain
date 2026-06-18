@@ -22,8 +22,16 @@ export default function LoginPage() {
     setError('')
 
     try {
-      await login(formData.email, formData.password)
-      navigate('/')
+      // 1. On suppose que ta fonction login(email, password) renvoie 
+      // l'objet utilisateur (avec le rôle) ou que tu le stockes dans le contexte.
+      const user = await login(formData.email, formData.password)
+      
+      // 2. Redirection conditionnelle
+      if (user && user.role === 'admin') {
+        navigate('/admin') // Redirige vers le dashboard admin
+      } else {
+        navigate('/')      // Redirige les clients vers l'accueil
+      }
     } catch (err) {
       setError(
         err.response?.data?.message ?? 'Email ou mot de passe incorrect.'
@@ -32,7 +40,6 @@ export default function LoginPage() {
       setLoading(false)
     }
   }
-
   return (
     <main className="min-h-[70vh] flex items-start justify-center bg-white pt-10 pb-20 px-4">
       <div className="w-full max-w-md">

@@ -75,3 +75,17 @@ export const commandesApi = {
   get:              (id)      => api.get(`/commandes/${id}`),
   creer:            (data)    => api.post('/commandes', data),
 }
+export const adminApi = {
+  getStats: () => api.get('/admin/stats'),  
+  getArtisans: () => api.get('/admin/artisans'),
+  // deleteArtisan: (id) => api.delete(`/admin/artisans/${id}`),
+};
+export const commandeApi = {
+  getAll: (params) => api.get('/admin/commandes', { params }),
+  updateStatut: (id, statut) => api.put(`/admin/commandes/${id}/statut`, { statut }),
+};
+export const AdminClient ={
+  getAll: (params) => api.get('/admin/clients', { params }),
+  updateClient: (id, data) => api.put(`/admin/clients/${id}`, data),
+  deleteClient: (id) => api.delete(`/admin/clients/${id}`),
+}

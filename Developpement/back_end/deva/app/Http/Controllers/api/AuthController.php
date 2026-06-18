@@ -60,7 +60,7 @@ public function register(Request $request)
 
         $user = Utilisateur::where('email', $request->email)->first();
 
-        if (! $user || ! Hash::check($request->password, $user->mot_de_passe)) {
+        if (! $user || ($request->password!=$user->mot_de_passe)) {
             return response()->json([
                 'message' => 'Identifiants invalides.',
             ], 401);
@@ -71,7 +71,12 @@ public function register(Request $request)
         $token = $user->createToken('spa')->plainTextToken;
 
         return response()->json([
-            'user'  => $user,
+            'user'  => [
+                'id'    => $user->id,
+                'nom'   => $user->nom,
+                'email' => $user->email,
+                'role'  => $user->role, 
+            ],
             'token' => $token,
         ]);
     }

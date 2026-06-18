@@ -72,4 +72,48 @@ class ArtisanController extends Controller
 
         return $base;
     }
+
+public function adminIndex(Request $request)
+{
+    $perPage = min((int) $request->get('per_page', 15), 50);
+    $search = $request->get('search');
+
+    $artisans = Artisan::with('utilisateur')
+        ->when($search, function ($query, $search) {
+            $query->where('boutique', 'like', "%{$search}%")
+                  ->orWhereHas('utilisateur', function ($q) use ($search) {
+                      $q->where('email', 'like', "%{$search}%");
+                  });
+        })
+        ->withCount(['produits' => fn($q) => $q->where('statut', 'actif')])
+        ->paginate($perPage);
+
+    // Transformation des données pour le front-end
+    $artisans->getCollection()->transform(function ($a) {
+        return [
+            'id'          => $a->id,
+            'boutique'    => $a->boutique,
+            'nom'         => $a->utilisateur->nom,
+            'prenom'      => $a->utilisateur->prenom,
+            'email'       => $a->utilisateur->email,
+            'nb_produits' => $a->produits_count,
+            'actif'       => (bool) $a->actif, // Assure-toi d'avoir une colonne 'actif' dans ta table artisans
+        ];
+    });
+
+    return response()->json($artisans);
+}
+
+public function toggle(Artisan $artisan)
+{
+    $artisan->actif = !$artisan->actif;
+    $artisan->save();
+    return response()->json(['message' => 'Statut mis à jour']);
+}
+
+public function destroy(Artisan $artisan)
+{
+    $artisan->delete();
+    return response()->json(['message' => 'Artisan supprimé']);
+}
 }

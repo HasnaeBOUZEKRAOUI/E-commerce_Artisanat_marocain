@@ -5,6 +5,11 @@ use App\Http\Controllers\Api\CategorieController;
 use App\Http\Controllers\Api\CommandeController;
 use App\Http\Controllers\Api\ArtisanController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\AdminController;
+use App\Http\Middleware\EnsureUserIsAdmin;
+use App\Http\Controllers\Api\AdminCommandeController;
+use App\Http\Controllers\Api\AdminClientController;
+
 
 // ── Routes publiques ───────────────────────────────────────────────────────
 Route::post('/login',    [AuthController::class, 'login']);
@@ -25,7 +30,7 @@ Route::get('/categories/{slug}/subcategories', [CategorieController::class, 'sub
 Route::get('/artisans/featured', [ArtisanController::class, 'featured']);
 Route::get('/artisans',          [ArtisanController::class, 'index']);
 Route::get('/artisans/{artisan}', [ArtisanController::class, 'show']);
- 
+
 // ── Routes protégées (token Sanctum requis) ────────────────────────────────
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
@@ -38,4 +43,18 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/orders/{orderId}/capture', [CommandeController::class, 'captureOrder']);});
 Route::middleware('auth:sanctum')->group(function () {
         Route::get('/commandes', [CommandeController::class, 'index']);
-    });
+});
+
+Route::middleware(['auth:sanctum', EnsureUserIsAdmin::class])->group(function () {
+    Route::get('/admin/stats', [AdminController::class, 'stats']);
+});
+Route::middleware(['auth:sanctum', EnsureUserIsAdmin::class])->group(function () {
+    Route::get('/artisans', [ArtisanController::class, 'adminIndex']);
+    Route::put('/artisans/{artisan}/toggle', [ArtisanController::class, 'toggle']);
+    Route::delete('/artisans/{artisan}', [ArtisanController::class, 'destroy']);
+});
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/admin/commandes', [AdminCommandeController::class, 'index']);
+    Route::put('/commandes/{commande}/statut', [AdminCommandeController::class, 'updateStatut']);
+    Route::get('/admin/clients', [AdminClientController::class, 'index']);
+});

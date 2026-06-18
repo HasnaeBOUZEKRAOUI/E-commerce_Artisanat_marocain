@@ -122,7 +122,6 @@ export default function CategoryPage() {
 
         <RecentlyViewed products={recentProducts} loading={recentLoading} />
       </div>
-      <Newsletter />
     </main>
   )
 }
