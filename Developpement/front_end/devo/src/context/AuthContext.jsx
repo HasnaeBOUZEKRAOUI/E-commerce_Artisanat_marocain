@@ -1,4 +1,3 @@
-// src/context/AuthContext.jsx
 import { createContext, useContext, useState, useEffect } from 'react'
 import { authApi } from '../api/services'
 
@@ -10,7 +9,6 @@ export function AuthProvider({ children }) {
   })
   const [loading, setLoading] = useState(true)
 
-  // Recharge l'utilisateur au refresh si un token existe
   useEffect(() => {
     const token = localStorage.getItem('auth_token')
     if (token) {
